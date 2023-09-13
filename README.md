@@ -9,6 +9,7 @@ This is a web scraping project that collects character information from the One 
  - Scrapy
  - PostgreSQL
  - psycopg2
+ - iPython
 
 ### Prerequisites
  - Python - I used version 3.11 (install online)
