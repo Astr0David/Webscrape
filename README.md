@@ -9,6 +9,7 @@ This is a web scraping project that collects character information from the One 
  - Scrapy
  - PostgreSQL
  - psycopg2
+ - iPython
 
 ### Prerequisites
  - Python - I used version 3.11 (install online)
@@ -22,9 +23,14 @@ This is a web scraping project that collects character information from the One 
 1. Clone the repository
 2. Navigate to project directory
 3. Create the virtual environment
-      - python -m venv venv
+   ```bash
+   python -m venv venv
+   ```
 5. Activate the virtual environment
-      - venv\Scripts\activate
+   ```bash
+   venv\Scripts\activate (Windows)
+   source venv/bin/activate (Mac/Linux)
+   ```
 7. Install dependancies
 8. Set up PostgreSQL database
    - create a PostgreSQL database
