@@ -4,6 +4,24 @@ from onepiecefandomscraper.items import OnePieceCharacterItem
 
 
 class CharacterspiderSpider(scrapy.Spider):
+    """
+    A Scrapy spider for scraping character data from the One Piece Fandom website.
+
+    This spider crawls the "List of Canon Characters" page on the One Piece Fandom
+    website to collect information about various One Piece characters, including their
+    names, appearances, personalities, abilities, and more. It also follows links to
+    individual character pages to gather additional details.
+
+    Attributes:
+        name (str): The name of the spider.
+        allowed_domains (list): The allowed domains for crawling.
+        start_urls (list): The initial URLs to start crawling.
+
+    Methods:
+        parse: Parses the main character list page and initiates requests for individual character pages.
+        parse_detailed_page: Parses individual character pages for additional information.
+    """
+
     name = "characterspider"
     allowed_domains = ["onepiece.fandom.com"]
     start_urls = ["https://onepiece.fandom.com/wiki/List_of_Canon_Characters"]
