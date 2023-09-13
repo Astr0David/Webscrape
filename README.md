@@ -3,6 +3,7 @@ This is a web scraping project that collects character information from the One 
 
 ### Project Overview
  - The goal of this project is to scrape character information from the One Piece Fandom website and store it in a PostgreSQL database for further analysis and usage. Since databse creation and credentials are unique I have not activated the pipeline for this, steps for you to store it in a database if you wish will be given.
+ - Can see the data in json file included: onepiecefandomscraper\data.json
 
 ### Technologies Used
  - Python
