@@ -33,14 +33,19 @@ This is a web scraping project that collects character information from the One 
    source venv/bin/activate (Mac/Linux)
    ```
 7. Install dependancies
-8. Set up PostgreSQL database
+   ```bash
+   pip install scrapy
+   pip install ipython
+   pip install psycopg2
+   ```
+9. Set up PostgreSQL database
    - create a PostgreSQL database
    - configure credentials in pipelines.py under SavingToPostgresPipeline class:
    - ![image](https://github.com/Astr0David/fandom-site-scraper/assets/119695055/ea5a7ece-6c4a-4e7b-93d2-1e4fe76c7fdc)
    - uncomment pipleine in settings.py:
    - ![image](https://github.com/Astr0David/fandom-site-scraper/assets/119695055/4e2f79b8-aa24-4c7f-8321-c77c94ebeea4)
 
-9. Run the scraper in terminal:
+10. Run the scraper in terminal:
   ```bash
    scrapy crawl characterspider
    ```
