@@ -47,7 +47,7 @@ class CharacterspiderSpider(scrapy.Spider):
                         yield scrapy.Request(
                             url=f"https://onepiece.fandom.com{link}",
                             callback=self.parse_detailed_page,
-                            meta={"data": data},
+                            meta={"data": data, "link": link},
                         )
 
                 elif idx in (2, 3):
@@ -72,8 +72,10 @@ class CharacterspiderSpider(scrapy.Spider):
 
     def parse_detailed_page(self, response):
         data = response.meta.get("data")
+        link = response.meta.get("link")
 
         section_ids = ["Appearance", "Personality", "Abilities_and_Powers"]
+        filled_sections = set()
 
         for section_id in section_ids:
             span_element = response.xpath(f'//h2/span[@id="{section_id}"]')
@@ -85,9 +87,70 @@ class CharacterspiderSpider(scrapy.Spider):
                     if sibling.xpath("local-name()").get() == "p":
                         paragraph_text = sibling.xpath("string()").get()
                         section_content += paragraph_text + " "
-                    elif sibling.xpath("local-name()").get() == "h2":
-                        break
+                    elif sibling.xpath("local-name()").get() in ("h2", "h3"):
+                        if section_content != "":
+                            break
+                        span_element = response.xpath(f'//h3/span[@id="{section_id}"]')
+                        if span_element:
+                            for sibling in span_element.xpath(
+                                "ancestor::h3/following-sibling::*"
+                            ):
+                                if sibling.xpath("local-name()").get() == "p":
+                                    paragraph_text = sibling.xpath("string()").get()
+                                    section_content += paragraph_text + " "
+                                elif sibling.xpath("local-name()").get() in ("h2"):
+                                    break
 
                 data[section_id.lower()] = section_content
+                filled_sections.add(section_id.lower())
 
-        yield data
+        if len(filled_sections) == len(section_ids):
+            yield data
+        else:
+            for section_id in section_ids:
+                if section_id not in filled_sections:
+                    if section_id == "Personality":
+                        yield scrapy.Request(
+                            url=f"https://onepiece.fandom.com/{link}/Personality_and_Relationships",
+                            callback=self.check_external_link,
+                            meta={
+                                "data": data,
+                                "section-id": "Personality",
+                                "filled-sections": filled_sections,
+                            },
+                        )
+                    elif section_id == "Abilities_and_Powers":
+                        yield scrapy.Request(
+                            url=f"https://onepiece.fandom.com/{link}/Abilities_and_Powers",
+                            callback=self.check_external_link,
+                            meta={
+                                "data": data,
+                                "section-id": "Abilities_and_Powers",
+                                "filled-sections": filled_sections,
+                            },
+                        )
+
+    def check_external_link(self, response):
+        data = response.meta.get("data")
+        section_id = response.meta.get("section-id")
+        filled_sections = response.meta.get("filled-sections")
+
+        span_element = response.xpath(
+            f'//h2/span[@id="{section_id}"]'
+        ) or response.xpath('//h2/span[@id="Overview"]')
+
+        if span_element:
+            section_content = ""
+
+            for sibling in span_element.xpath("ancestor::h2/following-sibling::*"):
+                if sibling.xpath("local-name()").get() == "p":
+                    paragraph_text = sibling.xpath("string()").get()
+                    section_content += paragraph_text + " "
+                elif sibling.xpath("local-name()").get() in ("h2", "h3"):
+                    break
+
+        data[section_id.lower()] = section_content
+        filled_sections.add(section_id.lower())
+
+        if len(filled_sections) == 3:
+            yield data
