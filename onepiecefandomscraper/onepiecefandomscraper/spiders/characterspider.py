@@ -135,9 +135,10 @@ class CharacterspiderSpider(scrapy.Spider):
         section_id = response.meta.get("section-id")
         filled_sections = response.meta.get("filled-sections")
 
-        span_element = response.xpath(
-            f'//h2/span[@id="{section_id}"]'
-        ) or response.xpath('//h2/span[@id="Overview"]')
+        span_element = (
+            response.xpath(f'//h2/span[@id="{section_id}"]')
+            or response.xpath('//h2/span[@id="Overview"]')
+        )
 
         if span_element:
             section_content = ""
@@ -146,6 +147,9 @@ class CharacterspiderSpider(scrapy.Spider):
                 if sibling.xpath("local-name()").get() == "p":
                     paragraph_text = sibling.xpath("string()").get()
                     section_content += paragraph_text + " "
+                elif sibling.xpath("local-name()").get() == "h3":
+                    if sibling.xpath("span[@id!='Overview']").get() is not None:
+                        break
                 elif sibling.xpath("local-name()").get() in ("h2", "h3"):
                     break
 
